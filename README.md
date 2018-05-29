@@ -32,6 +32,7 @@ services
     image: nowsci/plex-db-sync
     container_name: plex-db-sync
     volumes:
+      - /etc/localtime:/etc/localtime:ro
       - ./plex-db-sync/sshkey:/sshkey
       - /docker/plex/Library/Application Support/Plex Media Server/Plug-in Support/Databases/:/mnt/DB2
     cap_add:
