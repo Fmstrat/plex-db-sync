@@ -29,7 +29,7 @@ version: '2'
 services
 
   plex-db-sync:
-    image: plex-db-sync
+    image: nowsci/plex-db-sync
     container_name: plex-db-sync
     volumes:
       - ./plex-db-sync/sshkey:/sshkey
