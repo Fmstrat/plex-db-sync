@@ -4,13 +4,14 @@ Synchronizes the database watched status between two Plex servers. This inlcudes
 ## Usage
 To use the script, you will need to be able to access the databases of both Plex servers from one place. This can be done with programs like `sshfs`. For instance, you could run the script like this:
 ```
-wget https://raw.githubusercontent.com/Fmstrat/plex-db-sync/master/plex-db-sync.sh
+wget https://raw.githubusercontent.com/Fmstrat/plex-db-sync/master/plex-db-sync
 apt-get install sshfs sqlite3
 mkdir -p /mnt/sshfs
 sshfs -o allow_other,IdentityFile=/keys/serverkey -p 22 \
 	root@hostname.tld:"/var/lib/plexmediaserver/Library/Application Support/Plex Media Server/Plug-in Support/Databases/" \
 	/mnt/sshfs
-./plex-db-sync.sh \
+chmod +x plex-db-sync
+./plex-db-sync \
 	--plex-db-1 "/mnt/sshfs/com.plexapp.plugins.library.db" \
 	--plex-start-1 "ssh -oStrictHostKeyChecking=no -i /keys/serverkey root@hostname.tld service plexmediaserver start" \
 	--plex-stop-1 "ssh -oStrictHostKeyChecking=no -i /keys/serverkey root@hostname.tld service plexmediaserver stop" \
