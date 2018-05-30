@@ -47,7 +47,7 @@ services
       - S1_SSH_USER=root
       - S1_SSH_HOST=hostname
       - S1_SSH_PORT=22
-      - S1_SSH_PATH="/docker/plex/Library/Application Support/Plex Media Server/Plug-in Support/Databases"
+      - S1_SSH_PATH=/docker/plex/Library/Application Support/Plex Media Server/Plug-in Support/Databases
       - S1_START=ssh -oStrictHostKeyChecking=no -i /sshkey root@hostname 'cd /docker; docker-compose up -d plex'
       - S1_STOP=ssh -oStrictHostKeyChecking=no -i /sshkey root@hostname 'cd /docker; docker-compose stop plex'
       - S2_DB_PATH=/mnt/DB2

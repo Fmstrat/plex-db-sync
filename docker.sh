@@ -24,13 +24,13 @@ if [ -n "${S1_SSH_KEY}" ] && [ -n "${S1_SSH_PORT}" ] && [ -n "${S1_SSH_USER}" ] 
 	mkdir -p /mnt/S1
 	V_S1_DB_PATH="/mnt/S1"
 	echo -e "echo \x22[\`date\`] Mounting sshfs for server 1...\x22" >> /cron-script
-	echo -e "sshfs -o allow_other,cache=no,no_readahead,noauto_cache,StrictHostKeyChecking=no,IdentityFile=\x22${S1_SSH_KEY}\x22 -p ${S1_SSH_PORT} ${S1_SSH_USER}@${S1_SSH_HOST}:${S1_SSH_PATH} /mnt/S1" >> /cron-script
+	echo -e "sshfs -o allow_other,cache=no,no_readahead,noauto_cache,StrictHostKeyChecking=no,IdentityFile=\x22${S1_SSH_KEY}\x22 -p ${S1_SSH_PORT} ${S1_SSH_USER}@${S1_SSH_HOST}:\x22${S1_SSH_PATH}\x22 /mnt/S1" >> /cron-script
 fi
 if [ -n "${S2_SSH_KEY}" ] && [ -n "${S2_SSH_PORT}" ] && [ -n "${S2_SSH_USER}" ] && [ -n "${S2_SSH_HOST}" ] && [ -n "${S2_SSH_PATH}" ]; then
 	mkdir -p /mnt/S2
 	V_S2_DB_PATH="/mnt/S2"
 	echo -e "echo \x22[\`date\`] Mounting sshfs for server 2...\x22" >> /cron-script
-	echo -e "sshfs -o allow_other,cache=no,no_readahead,noauto_cache,StrictHostKeyChecking=no,IdentityFile=\x22${S2_SSH_KEY}\x22 -p ${S2_SSH_PORT} ${S2_SSH_USER}@${S2_SSH_HOST}:${S2_SSH_PATH} /mnt/S2" >> /cron-script
+	echo -e "sshfs -o allow_other,cache=no,no_readahead,noauto_cache,StrictHostKeyChecking=no,IdentityFile=\x22${S2_SSH_KEY}\x22 -p ${S2_SSH_PORT} ${S2_SSH_USER}@${S2_SSH_HOST}:\x22${S2_SSH_PATH}\x22 /mnt/S2" >> /cron-script
 fi
 echo -e "/plex-db-sync --dry-run \x22${V_DRYRUN}\x22 --backup \x22${V_BACKUP}\x22 --debug \x22${V_DEBUG}\x22 --tmp-folder \x22${V_TMPFOLDER}\x22 --plex-db-1 \x22${V_S1_DB_PATH}/com.plexapp.plugins.library.db\x22 --plex-start-1 \x22${S1_START}\x22 --plex-stop-1 \x22${S1_STOP}\x22 --plex-db-2 \x22${V_S2_DB_PATH}/com.plexapp.plugins.library.db\x22 --plex-start-2 \x22${S2_START}\x22 --plex-stop-2 \x22${S2_STOP}\x22 --ignore-accounts \x22${IGNOREACCOUNTS}\x22" >> /cron-script
 if [ -n "${S1_SSH_KEY}" ] && [ -n "${S1_SSH_PORT}" ] && [ -n "${S1_SSH_USER}" ] && [ -n "${S1_SSH_HOST}" ] && [ -n "${S1_SSH_PATH}" ]; then

@@ -65,10 +65,14 @@ function setnull() {
 }
 
 function initSql() {
-	echo "PRAGMA journal_mode=WAL;" > "${PLEXF1}"
-	echo "PRAGMA wal_checkpoint;" >> "${PLEXF1}"
-	echo "PRAGMA journal_mode=WAL;" > "${PLEXF2}"
-	echo "PRAGMA wal_checkpoint;" >> "${PLEXF2}"
+	if [ -f "${PLEXF1}" ]; then
+		rm -f "${PLEXF1}"
+	fi
+	touch "${PLEXF1}"
+	if [ -f "${PLEXF2}" ]; then
+		rm -f "${PLEXF2}"
+	fi
+	touch "${PLEXF2}"
 }
 
 function echoSql() {
@@ -76,11 +80,6 @@ function echoSql() {
 		echoD "${1}: ${2}"
 	fi
 	echo "${2}" >> "${1}"
-}
-
-function closeSql() {
-	echo "PRAGMA wal_checkpoint;" >> "${PLEXF1}"
-	echo "PRAGMA wal_checkpoint;" >> "${PLEXF2}"
 }
 
 function checkDependencies() {
@@ -395,7 +394,6 @@ if checkForNew; then
 		done
 	done
 
-	closeSql
 	updateServers
 	closeFS
 else
