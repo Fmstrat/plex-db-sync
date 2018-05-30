@@ -226,38 +226,46 @@ function checkRequired() {
 	fi
 }
 
+function stopServers() {
+	if [ -n "${PLEXSTOP1}" ]; then
+		echoDN "Stopping Plex on Server 1..."
+		eval ${PLEXSTOP1} 1> /dev/null 2>&1
+		echo "Done"
+	fi
+	if [ -n "${PLEXSTOP2}" ]; then
+		echoDN "Stopping Plex on Server 2..."
+		eval ${PLEXSTOP2} 1> /dev/null 2>&1
+		echo "Done"
+	fi
+	sleep 3
+}
+
+function startServers() {
+	sleep 3
+	if [ -n "${PLEXSTART1}" ]; then
+		echoDN "Starting Plex on Server 1..."
+		eval ${PLEXSTART1} 1> /dev/null 2>&1
+		echo "Done"
+	fi
+	if [ -n "${PLEXSTART2}" ]; then
+		echoDN "Starting Plex on Server 2..."
+		eval ${PLEXSTART2} 1> /dev/null 2>&1
+		echo "Done"
+	fi
+}
+
 function updateServers() {
 	if [ $COUNT1 -gt 0 ]; then
-		if [ -n "${PLEXSTOP1}" ]; then
-			echoDN "Stopping Plex on Server 1..."
-			eval ${PLEXSTOP1} 1> /dev/null 2>&1
-			echoD "Done"
-		fi
 		if [ "${BACKUP}" == "true" ]; then
 			runBackup "${PLEXDB1}"
 		fi
 		file2sql "${PLEXDB1}" "${PLEXF1}"
-		if [ -n "${PLEXSTART1}" ]; then
-			echoDN "Starting Plex on Server 1..."
-			eval ${PLEXSTART1} 1> /dev/null 2>&1
-			echoD "Done"
-		fi
 	fi
 	if [ $COUNT2 -gt 0 ]; then
-		if [ -n "${PLEXSTOP2}" ]; then
-			echoDN "Stopping Plex on Server 2..."
-			eval ${PLEXSTOP2} 1> /dev/null 2>&1
-			echoD "Done"
-		fi
 		if [ "${BACKUP}" == "true" ]; then
 			runBackup "${PLEXDB2}"
 		fi
 		file2sql "${PLEXDB2}" "${PLEXF2}"
-		if [ -n "${PLEXSTART2}" ]; then
-			echoDN "Starting Plex on Server 2..."
-			eval ${PLEXSTART2} 1> /dev/null 2>&1
-			echoD "Done"
-		fi
 	fi
 }
 
@@ -345,6 +353,7 @@ checkRequired "--plex-stop-2"
 printConfig
 checkForDBs
 
+stopServers
 echoDN "Checking for changes... "
 if checkForNew; then
 	echo "Found"
@@ -392,4 +401,5 @@ if checkForNew; then
 else
 	echo "None found"
 fi
+startServers
 echoD "Finished."
