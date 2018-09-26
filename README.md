@@ -1,5 +1,5 @@
 # plex-db-sync
-Synchronizes the database watched status between two Plex servers. This inlcudes watched times, and works for all users on the system without the need for tokens.
+Synchronizes the database watched status between two Plex servers. This includes watched times, and works for all users on the system without the need for tokens.
 
 ## Usage
 To use the script, you will need to be able to access the databases of both Plex servers from one place. This can be done with programs like `sshfs`. For instance, you could run the script like this:
