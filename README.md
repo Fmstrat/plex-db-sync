@@ -26,7 +26,7 @@ The following example is for docker-compose. It assumes you are running one Plex
 ```
 version: '2'
 
-services
+services:
 
   plex-db-sync:
     image: nowsci/plex-db-sync
