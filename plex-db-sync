@@ -102,6 +102,16 @@ function checkForDBs() {
 		echoD "Server 2 DB not found"
 		exit
 	fi
+	if [ "${NOCOMPAREDB}" == "false" ]; then
+		VPLEXDB1=$(echo "select version from schema_migrations order by version desc limit 1;" | sqlite3 "${PLEXDB1}")
+		VPLEXDB2=$(echo "select version from schema_migrations order by version desc limit 1;" | sqlite3 "${PLEXDB2}")
+		if [ "${DEBUG}" == "true" ]; then
+			echoD "version db1: ${VPLEXDB1}  db2: ${VPLEXDB2}"
+		fi
+		if [ [ "${VPLEXDB1}" != "${VPLEXDB2}" ]; then
+			echoD "Versions of plex databases not equal"
+			exit
+		fi
 }
 
 function initFS() {
@@ -149,14 +159,14 @@ function getIgnore() {
 }
 
 function createTmpDB() {
-	echo 'CREATE TABLE "metadata_item_settings1" ("id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "account_id" integer, "guid" varchar(255), "rating" float, "view_offset" integer, "view_count" integer, "last_viewed_at" datetime, "created_at" datetime, "updated_at" datetime, 'skip_count' integer DEFAULT 0, 'last_skipped_at' datetime DEFAULT NULL, 'changed_at' integer(8) default '0', 'extra_data' varchar(255));' | sqlite3 "${TMPDB}"
-	echo 'CREATE TABLE "metadata_item_settings2" ("id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "account_id" integer, "guid" varchar(255), "rating" float, "view_offset" integer, "view_count" integer, "last_viewed_at" datetime, "created_at" datetime, "updated_at" datetime, 'skip_count' integer DEFAULT 0, 'last_skipped_at' datetime DEFAULT NULL, 'changed_at' integer(8) default '0', 'extra_data' varchar(255));' | sqlite3 "${TMPDB}"
-	echo 'CREATE TABLE "metadata_items1" ("id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "library_section_id" integer, "parent_id" integer, "metadata_type" integer, "guid" varchar(255), "media_item_count" integer, "title" varchar(255), "title_sort" varchar(255) COLLATE NOCASE, "original_title" varchar(255), "studio" varchar(255), "rating" float, "rating_count" integer, "tagline" varchar(255), "summary" text, "trivia" text, "quotes" text, "content_rating" varchar(255), "content_rating_age" integer, "index" integer, "absolute_index" integer, "duration" integer, "user_thumb_url" varchar(255), "user_art_url" varchar(255), "user_banner_url" varchar(255), "user_music_url" varchar(255), "user_fields" varchar(255), "tags_genre" varchar(255), "tags_collection" varchar(255), "tags_director" varchar(255), "tags_writer" varchar(255), "tags_star" varchar(255), "originally_available_at" datetime, "available_at" datetime, "expires_at" datetime, "refreshed_at" datetime, "year" integer, "added_at" datetime, "created_at" datetime, "updated_at" datetime, "deleted_at" datetime, "tags_country" varchar(255), "extra_data" varchar(255), "hash" varchar(255), "audience_rating" float, "changed_at" integer(8) DEFAULT 0, "resources_changed_at" integer(8) DEFAULT 0, "remote" integer);' | sqlite3 "${TMPDB}"
-	echo 'CREATE TABLE "metadata_items2" ("id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "library_section_id" integer, "parent_id" integer, "metadata_type" integer, "guid" varchar(255), "media_item_count" integer, "title" varchar(255), "title_sort" varchar(255) COLLATE NOCASE, "original_title" varchar(255), "studio" varchar(255), "rating" float, "rating_count" integer, "tagline" varchar(255), "summary" text, "trivia" text, "quotes" text, "content_rating" varchar(255), "content_rating_age" integer, "index" integer, "absolute_index" integer, "duration" integer, "user_thumb_url" varchar(255), "user_art_url" varchar(255), "user_banner_url" varchar(255), "user_music_url" varchar(255), "user_fields" varchar(255), "tags_genre" varchar(255), "tags_collection" varchar(255), "tags_director" varchar(255), "tags_writer" varchar(255), "tags_star" varchar(255), "originally_available_at" datetime, "available_at" datetime, "expires_at" datetime, "refreshed_at" datetime, "year" integer, "added_at" datetime, "created_at" datetime, "updated_at" datetime, "deleted_at" datetime, "tags_country" varchar(255), "extra_data" varchar(255), "hash" varchar(255), "audience_rating" float, "changed_at" integer(8) DEFAULT 0, "resources_changed_at" integer(8) DEFAULT 0, "remote" integer);' | sqlite3 "${TMPDB}"
-	echo 'CREATE TABLE "taggings1" ("id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "metadata_item_id" integer, "tag_id" integer, "index" integer, "text" varchar(255), "time_offset" integer, "end_time_offset" integer, "thumb_url" varchar(255), "created_at" datetime, "extra_data" varchar(255));' | sqlite3 "${TMPDB}"
-	echo 'CREATE TABLE "taggings2" ("id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "metadata_item_id" integer, "tag_id" integer, "index" integer, "text" varchar(255), "time_offset" integer, "end_time_offset" integer, "thumb_url" varchar(255), "created_at" datetime, "extra_data" varchar(255));' | sqlite3 "${TMPDB}"
-	echo 'CREATE TABLE "tags1" ("id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "metadata_item_id" integer, "tag" varchar(255) COLLATE NOCASE, "tag_type" integer, "user_thumb_url" varchar(255), "user_art_url" varchar(255), "user_music_url" varchar(255), "created_at" datetime, "updated_at" datetime, "tag_value" integer, "extra_data" varchar(255), 'key' varchar(255), 'parent_id' integer);' | sqlite3 "${TMPDB}"
-	echo 'CREATE TABLE "tags2" ("id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "metadata_item_id" integer, "tag" varchar(255) COLLATE NOCASE, "tag_type" integer, "user_thumb_url" varchar(255), "user_art_url" varchar(255), "user_music_url" varchar(255), "created_at" datetime, "updated_at" datetime, "tag_value" integer, "extra_data" varchar(255), 'key' varchar(255), 'parent_id' integer);' | sqlite3 "${TMPDB}"
+	sqlite3 "${PLEXDB1}" ".schema metadata_settings"|grep CREATE\ TABLE |sed -e 's,CREATE TABLE IF NOT EXISTS "metadata_settings",CREATE TABLE IF NOT EXISTS "metadata_settings1",g'| sqlite3 "${TMPDB}"
+	sqlite3 "${PLEXDB1}" ".schema metadata_settings"|grep CREATE\ TABLE |sed -e 's,CREATE TABLE IF NOT EXISTS "metadata_settings",CREATE TABLE IF NOT EXISTS "metadata_settings2",g'| sqlite3 "${TMPDB}"
+	sqlite3 "${PLEXDB1}" ".schema metadata_items"|grep CREATE\ TABLE |sed -e 's,CREATE TABLE IF NOT EXISTS "metadata_items",CREATE TABLE IF NOT EXISTS "metadata_items1",g'| sqlite3 "${TMPDB}"
+	sqlite3 "${PLEXDB1}" ".schema metadata_items"|grep CREATE\ TABLE |sed -e 's,CREATE TABLE IF NOT EXISTS "metadata_items",CREATE TABLE IF NOT EXISTS "metadata_items2",g'| sqlite3 "${TMPDB}"
+	sqlite3 "${PLEXDB1}" ".schema taggings"|grep CREATE\ TABLE |sed -e 's,CREATE TABLE IF NOT EXISTS "taggings",CREATE TABLE IF NOT EXISTS "etadata_taggings1",g'| sqlite3 "${TMPDB}"
+	sqlite3 "${PLEXDB1}" ".schema taggings"|grep CREATE\ TABLE |sed -e 's,CREATE TABLE IF NOT EXISTS "taggings",CREATE TABLE IF NOT EXISTS "taggings2",g'| sqlite3 "${TMPDB}"
+	sqlite3 "${PLEXDB1}" ".schema tags"|grep CREATE\ TABLE |sed -e 's,CREATE TABLE IF NOT EXISTS "tags",CREATE TABLE IF NOT EXISTS "tags1",g'| sqlite3 "${TMPDB}"
+	sqlite3 "${PLEXDB1}" ".schema tags"|grep CREATE\ TABLE |sed -e 's,CREATE TABLE IF NOT EXISTS "tags",CREATE TABLE IF NOT EXISTS "tags2",g'| sqlite3 "${TMPDB}"
 	echo "attach '${PLEXDB1}' as plexdb; attach '${TMPDB}' as tmpdb; insert into tmpdb.metadata_item_settings1 select * from plexdb.metadata_item_settings; insert into tmpdb.metadata_items1 select * from plexdb.metadata_items; insert into tmpdb.taggings1 select * from plexdb.taggings; insert into tmpdb.tags1 select * from plexdb.tags;" | sqlite3
 	echo "attach '${PLEXDB2}' as plexdb; attach '${TMPDB}' as tmpdb; insert into tmpdb.metadata_item_settings2 select * from plexdb.metadata_item_settings; insert into tmpdb.metadata_items2 select * from plexdb.metadata_items; insert into tmpdb.taggings2 select * from plexdb.taggings; insert into tmpdb.tags2 select * from plexdb.tags;" | sqlite3
 }
@@ -339,7 +349,7 @@ function printConfig() {
 }
 
 function showUsage() {
-	echoD "Usage: ./plex-db-sync.sh --dry-run <true/false> --backup <true/false> --debug <true/false> --plex-db-1 <path/to/database.db (r)> --plex-db-2 <path/to/database.db (r)> --plex-start-1 <command to start plex (r)> --plex-stop-1 <command to stop plex (r)> --plex-start-2 <command to start plex (r)> --plex-stop-2 <command to stop plex (r)> --ignore-accounts <Account1,Account2> --tmp-folder </tmp/plex-db-sync>"
+	echoD "Usage: ./plex-db-sync.sh --dry-run <true/false> --backup <true/false> --debug <true/false> --nocomparedb <true/false> --plex-db-1 <path/to/database.db (r)> --plex-db-2 <path/to/database.db (r)> --plex-start-1 <command to start plex (r)> --plex-stop-1 <command to stop plex (r)> --plex-start-2 <command to start plex (r)> --plex-stop-2 <command to stop plex (r)> --ignore-accounts <Account1,Account2> --tmp-folder </tmp/plex-db-sync>"
 }
 
 function checkForNew() {
@@ -369,6 +379,7 @@ TMPFOLDER=$(getConfig "--tmp-folder" "/tmp/plex-db-sync")
 DEBUG=$(getConfig "--debug" "false")
 BACKUP=$(getConfig "--backup" "false")
 DRYRUN=$(getConfig "--dry-run" "false")
+NOCOMPAREDB=$(getConfig "--nocomparedb" "false")
 PLEXDB1=$(getConfig "--plex-db-1" "")
 PLEXDB2=$(getConfig "--plex-db-2" "")
 PLEXSTART1=$(getConfig "--plex-start-1" "")
