@@ -112,6 +112,7 @@ function checkForDBs() {
 			echoD "Versions of plex databases not equal"
 			exit
 		fi
+	fi
 }
 
 function initFS() {
