@@ -164,7 +164,7 @@ function createTmpDB() {
 	sqlite3 "${PLEXDB1}" ".schema metadata_item_settings"|grep CREATE\ TABLE |sed -e 's,CREATE TABLE IF NOT EXISTS "metadata_item_settings",CREATE TABLE IF NOT EXISTS "metadata_item_settings2",g'| sqlite3 "${TMPDB}"
 	sqlite3 "${PLEXDB1}" ".schema metadata_items"|grep CREATE\ TABLE |sed -e 's,CREATE TABLE IF NOT EXISTS "metadata_items",CREATE TABLE IF NOT EXISTS "metadata_items1",g'| sqlite3 "${TMPDB}"
 	sqlite3 "${PLEXDB1}" ".schema metadata_items"|grep CREATE\ TABLE |sed -e 's,CREATE TABLE IF NOT EXISTS "metadata_items",CREATE TABLE IF NOT EXISTS "metadata_items2",g'| sqlite3 "${TMPDB}"
-	sqlite3 "${PLEXDB1}" ".schema taggings"|grep CREATE\ TABLE |sed -e 's,CREATE TABLE IF NOT EXISTS "taggings",CREATE TABLE IF NOT EXISTS "etadata_taggings1",g'| sqlite3 "${TMPDB}"
+	sqlite3 "${PLEXDB1}" ".schema taggings"|grep CREATE\ TABLE |sed -e 's,CREATE TABLE IF NOT EXISTS "taggings",CREATE TABLE IF NOT EXISTS "taggings1",g'| sqlite3 "${TMPDB}"
 	sqlite3 "${PLEXDB1}" ".schema taggings"|grep CREATE\ TABLE |sed -e 's,CREATE TABLE IF NOT EXISTS "taggings",CREATE TABLE IF NOT EXISTS "taggings2",g'| sqlite3 "${TMPDB}"
 	sqlite3 "${PLEXDB1}" ".schema tags"|grep CREATE\ TABLE |sed -e 's,CREATE TABLE IF NOT EXISTS "tags",CREATE TABLE IF NOT EXISTS "tags1",g'| sqlite3 "${TMPDB}"
 	sqlite3 "${PLEXDB1}" ".schema tags"|grep CREATE\ TABLE |sed -e 's,CREATE TABLE IF NOT EXISTS "tags",CREATE TABLE IF NOT EXISTS "tags2",g'| sqlite3 "${TMPDB}"
