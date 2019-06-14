@@ -160,14 +160,12 @@ function getIgnore() {
 }
 
 function createTmpDB() {
-	sqlite3 "${PLEXDB1}" ".schema metadata_item_settings"|grep CREATE\ TABLE |sed -e 's,CREATE TABLE IF NOT EXISTS "metadata_item_settings",CREATE TABLE IF NOT EXISTS "metadata_item_settings1",g'| sqlite3 "${TMPDB}"
-	sqlite3 "${PLEXDB1}" ".schema metadata_item_settings"|grep CREATE\ TABLE |sed -e 's,CREATE TABLE IF NOT EXISTS "metadata_item_settings",CREATE TABLE IF NOT EXISTS "metadata_item_settings2",g'| sqlite3 "${TMPDB}"
-	sqlite3 "${PLEXDB1}" ".schema metadata_items"|grep CREATE\ TABLE |sed -e 's,CREATE TABLE IF NOT EXISTS "metadata_items",CREATE TABLE IF NOT EXISTS "metadata_items1",g'| sqlite3 "${TMPDB}"
-	sqlite3 "${PLEXDB1}" ".schema metadata_items"|grep CREATE\ TABLE |sed -e 's,CREATE TABLE IF NOT EXISTS "metadata_items",CREATE TABLE IF NOT EXISTS "metadata_items2",g'| sqlite3 "${TMPDB}"
-	sqlite3 "${PLEXDB1}" ".schema taggings"|grep CREATE\ TABLE |sed -e 's,CREATE TABLE IF NOT EXISTS "taggings",CREATE TABLE IF NOT EXISTS "taggings1",g'| sqlite3 "${TMPDB}"
-	sqlite3 "${PLEXDB1}" ".schema taggings"|grep CREATE\ TABLE |sed -e 's,CREATE TABLE IF NOT EXISTS "taggings",CREATE TABLE IF NOT EXISTS "taggings2",g'| sqlite3 "${TMPDB}"
-	sqlite3 "${PLEXDB1}" ".schema tags"|grep CREATE\ TABLE |sed -e 's,CREATE TABLE IF NOT EXISTS "tags",CREATE TABLE IF NOT EXISTS "tags1",g'| sqlite3 "${TMPDB}"
-	sqlite3 "${PLEXDB1}" ".schema tags"|grep CREATE\ TABLE |sed -e 's,CREATE TABLE IF NOT EXISTS "tags",CREATE TABLE IF NOT EXISTS "tags2",g'| sqlite3 "${TMPDB}"
+	TablesTmpDB=(metadata_item_settings metadata_items taggings tags)
+	for TableTmpDB in ${TablesTmpDB[*]}
+	do
+		sqlite3 "${PLEXDB1}" "select sql from sqlite_master where name = '${TableTmpDB}'" | sed -e "s,${TableTmpDB},${TableTmpDB}1,g" | sqlite3 "${TMPDB}"
+		sqlite3 "${PLEXDB1}" "select sql from sqlite_master where name = '${TableTmpDB}'" | sed -e "s,${TableTmpDB},${TableTmpDB}2,g" | sqlite3 "${TMPDB}"
+	done
 	echo "attach '${PLEXDB1}' as plexdb; attach '${TMPDB}' as tmpdb; insert into tmpdb.metadata_item_settings1 select * from plexdb.metadata_item_settings; insert into tmpdb.metadata_items1 select * from plexdb.metadata_items; insert into tmpdb.taggings1 select * from plexdb.taggings; insert into tmpdb.tags1 select * from plexdb.tags;" | sqlite3
 	echo "attach '${PLEXDB2}' as plexdb; attach '${TMPDB}' as tmpdb; insert into tmpdb.metadata_item_settings2 select * from plexdb.metadata_item_settings; insert into tmpdb.metadata_items2 select * from plexdb.metadata_items; insert into tmpdb.taggings2 select * from plexdb.taggings; insert into tmpdb.tags2 select * from plexdb.tags;" | sqlite3
 }
