@@ -66,6 +66,7 @@ Command Line | Docker Variable | Description
 `--plex-db-(1/2)` | `S(1/2)_DB_PATH` | Location of the server's DB. For the script, this is the file itself, for docker, it is the path.
 `--plex-start-(1/2)` | `S(1/2)_START` | The command to start the Plex server.
 `--plex-stop-(1/2)` | `S(1/2)_STOP` | The command to stop the Plex server.
+`--nocomparedb <true/false>` | n/a | Don't compare version db of Plex server.
 n/a | `CRON` | A string that defines when the script should run in crond (Default is 4AM).
 n/a | `INITIALRUN` | Run at start prior to starting cron.
 n/a | `S(1/2)_SSH_KEY` | The SSH identity file.
