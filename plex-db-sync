@@ -108,7 +108,7 @@ function checkForDBs() {
 		if [ "${DEBUG}" == "true" ]; then
 			echoD "version db1: ${VPLEXDB1}  db2: ${VPLEXDB2}"
 		fi
-		if [ [ "${VPLEXDB1}" != "${VPLEXDB2}" ]; then
+		if [ "${VPLEXDB1}" != "${VPLEXDB2}" ]; then
 			echoD "Versions of plex databases not equal"
 			exit
 		fi
